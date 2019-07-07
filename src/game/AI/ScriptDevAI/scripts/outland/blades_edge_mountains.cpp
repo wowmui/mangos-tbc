@@ -1757,7 +1757,8 @@ struct npc_frequency_scanner : public ScriptedAI
 
     void JustSummoned(GameObject* go) override
     {
-        static_cast<go_aura_generator_000AI*>(go->AI())->m_player = m_creature->GetSpawnerGuid();
+		go_aura_generator_000AI* go_aura_generator = new go_aura_generator_000AI(go);
+		go_aura_generator->m_player = m_creature->GetSpawnerGuid();
     }
 
     void ReceiveAIEvent(AIEventType eventType, Unit* /*pSender*/, Unit* pInvoker, uint32 /*uiMiscValue*/) override
