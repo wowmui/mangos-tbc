@@ -8933,8 +8933,11 @@ bool Unit::SelectHostileTarget()
     {
         if (IsLeashingTarget(target))
         {
-            AI()->EnterEvadeMode();
-            return false;
+			if (!GetMap()->IsDungeon())
+			{
+				AI()->EnterEvadeMode();
+				return false;
+			}
         }
 
         // needs a much better check, seems to cause quite a bit of trouble
