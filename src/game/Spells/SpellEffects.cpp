@@ -2972,9 +2972,11 @@ void Spell::EffectDummy(SpellEffectIndex eff_idx)
 
                 // additional damage from pet to pet target
                 Pet* pet = m_caster->GetPet();
-                if (!pet || !pet->getVictim())
+                if (!pet || !m_caster->getVictim())
                     return;
 
+				if (!pet->Attack(m_caster->getVictim(), true))
+					return;
                 uint32 spell_id = 0;
                 switch (m_spellInfo->Id)
                 {
