@@ -11582,6 +11582,8 @@ bool Unit::TakeCharmOf(Unit* charmed, uint32 spellId, bool advertised /*= true*/
         if (charmerPlayer->GetGroup())
             charmerPlayer->SetGroupUpdateFlag(GROUP_UPDATE_PET);
     }
+	if (spellId == 33684)
+		charmed->setFaction(1761);
 
     return true;
 }
