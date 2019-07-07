@@ -104,9 +104,11 @@ struct boss_terokkAI : public ScriptedAI, public CombatActions
         });
         AddCustomAction(TEROKK_ACTION_ACE_CAST, true, [&]
         {
-            Creature* target = GetClosestCreatureWithEntry(m_creature, NPC_SKYGUARD_TARGET, 70.f);
-            if (Creature* ace = m_creature->GetMap()->GetCreature(m_aces[1]))
-                ace->AI()->DoCastSpellIfCan(target, SPELL_ANCIENT_FLAMES);
+            if (Creature* target = GetClosestCreatureWithEntry(m_creature, NPC_SKYGUARD_TARGET, 70.f))
+			{
+				if (Creature * ace = m_creature->GetMap()->GetCreature(m_aces[1]))
+					ace->AI()->DoCastSpellIfCan(target, SPELL_ANCIENT_FLAMES, TRIGGERED_OLD_TRIGGERED);
+			};
         });
         AddCombatAction(TEROKK_COMBAT_ACTION_DIVINE_SHIELD, 0u);
         AddCombatAction(TEROKK_COMBAT_ACTION_SHADOW_BOLT_VOLLEY, 0u);
@@ -116,6 +118,11 @@ struct boss_terokkAI : public ScriptedAI, public CombatActions
 
     bool m_phase;
     GuidVector m_aces;
+
+	void JustReachedHome() override
+	{
+		m_creature->CastSpell(nullptr, SPELL_SHADOWFORM, TRIGGERED_OLD_TRIGGERED);
+	}
 
     uint32 GetInitialActionTimer(TerokkActions id)
     {
@@ -183,6 +190,8 @@ struct boss_terokkAI : public ScriptedAI, public CombatActions
     {
         if (eventType == AI_EVENT_CUSTOM_A)
         {
+			if (!m_creature->HasAura(SPELL_DIVINE_SHIELD))
+				return;
             m_creature->RemoveAurasDueToSpell(SPELL_DIVINE_SHIELD);
             m_creature->CastSpell(nullptr, SPELL_ENRAGE, TRIGGERED_NONE);
             DoScriptText(SAY_ENRAGE, m_creature);
@@ -191,6 +200,8 @@ struct boss_terokkAI : public ScriptedAI, public CombatActions
 
     void JustSummoned(Creature* creature) override
     {
+		creature->SetCanFly(true);
+		creature->SetSpeedRate(MOVE_FLIGHT, 5.0f, false);
         creature->AI()->SetReactState(REACT_PASSIVE);
         switch (m_aces.size())
         {
@@ -269,10 +280,12 @@ struct boss_terokkAI : public ScriptedAI, public CombatActions
                     m_creature->RemoveAurasDueToSpell(SPELL_ENRAGE);
                     if (DoCastSpellIfCan(nullptr, SPELL_DIVINE_SHIELD) == CAST_OK)
                     {
-                        Creature* stalker = GetClosestCreatureWithEntry(m_creature, NPC_INVISIBLE_STALKER, 70.f);
-                        if (stalker)
-                            if (Creature* ace = m_creature->GetMap()->GetCreature(m_aces[0]))
-                                ace->AI()->DoCastSpellIfCan(stalker, SPELL_SKYGUARD_FLARE);
+
+						if (Creature * ace = m_creature->GetMap()->GetCreature(m_aces[0]))
+						{
+							if (ace->GetDistance(m_creature) <= 70.0f)
+								ace->AI()->DoCastSpellIfCan(m_creature, SPELL_SKYGUARD_FLARE);
+						}
                         ResetTimer(TEROKK_ACTION_ACE_CAST, 15000);
                         SetActionReadyStatus(i, false);
                         ResetTimer(i, GetSubsequentActionTimer(TerokkActions(i)));
