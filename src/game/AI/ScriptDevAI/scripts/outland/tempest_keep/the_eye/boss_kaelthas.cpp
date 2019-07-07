@@ -364,7 +364,7 @@ struct boss_kaelthasAI : public ScriptedAI
         m_attackAngle = 0.0f;
 
         SetCombatMovement(true);
-        DoDespawnSummons(true);
+        DoDespawnSummons();
 
         m_rangeMode = true;
         m_meleeEnabled = false;
@@ -394,7 +394,7 @@ struct boss_kaelthasAI : public ScriptedAI
         reader.PSendSysMessage("Kael'thas is currently in phase %u", uint32(m_uiPhase));
     }
 
-    void ReceiveAIEvent(AIEventType eventType, Unit* sender, Unit* invoker, uint32 miscValue) override
+    void ReceiveAIEvent(AIEventType eventType, Unit* /*sender*/, Unit* /*invoker*/, uint32 /*miscValue*/) override
     {
         if (eventType == AI_EVENT_CUSTOM_A)
         {
@@ -402,7 +402,7 @@ struct boss_kaelthasAI : public ScriptedAI
         }
     }
 
-    void DoDespawnSummons(bool bIsEventEnd = false)
+    void DoDespawnSummons()
     {
         for (GuidList::const_iterator itr = m_lSummonedGuidList.begin(); itr != m_lSummonedGuidList.end(); ++itr)
         {
@@ -457,7 +457,7 @@ struct boss_kaelthasAI : public ScriptedAI
         if (m_pInstance)
             m_pInstance->SetData(TYPE_KAELTHAS, DONE);
 
-        DoDespawnSummons(true);
+        DoDespawnSummons();
         ResetSize();
     }
 
@@ -1517,7 +1517,7 @@ struct boss_thaladred_the_darkenerAI : public advisor_base_ai
         advisor_base_ai::Reset();
     }
 
-    void Aggro(Unit* pWho) override
+    void Aggro(Unit* /*pWho*/) override
     {
         DoScriptText(SAY_THALADRED_AGGRO, m_creature);
     }
