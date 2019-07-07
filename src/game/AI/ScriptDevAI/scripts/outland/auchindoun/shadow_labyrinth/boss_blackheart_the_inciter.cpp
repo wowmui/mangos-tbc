@@ -125,6 +125,7 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
         {
             if (m_uiInciteChaosWaitTimer <= uiDiff)
             {
+				m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PLAYER);
                 // Restart attack on all targets
                 for (GuidVector::const_iterator itr = m_vTargetsGuids.begin(); itr != m_vTargetsGuids.end(); ++itr)
                 {
@@ -137,6 +138,7 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
             }
             else
                 m_uiInciteChaosWaitTimer -= uiDiff;
+			return;
         }
 
         // Return since we have no pTarget
@@ -151,6 +153,7 @@ struct boss_blackheart_the_inciterAI : public ScriptedAI
 
             if (DoCastSpellIfCan(m_creature, SPELL_INCITE_CHAOS) == CAST_OK)
             {
+				m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_IMMUNE_TO_PLAYER);
                 m_creature->HandleEmote(EMOTE_STATE_LAUGH);
                 m_uiInciteChaosTimer = 55000;
                 m_uiInciteChaosWaitTimer = 16000;
