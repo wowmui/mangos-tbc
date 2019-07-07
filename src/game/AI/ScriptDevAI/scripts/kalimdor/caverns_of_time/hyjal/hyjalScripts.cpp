@@ -50,6 +50,36 @@ UnitAI* GetAI_npc_jaina_proudmoore(Creature* creature)
     return tempAI;
 }
 
+
+bool GossipHello_npc_jaina_proudmoore(Player* pPlayer, Creature* pCreature)
+{
+	if (instance_mount_hyjal * instance = (instance_mount_hyjal*)pCreature->GetInstanceData())
+	{
+		if (hyjalAI * jainaAI = dynamic_cast<hyjalAI*>(pCreature->AI()))
+		{
+			uint32 RageEncounter = instance->GetData(TYPE_WINTERCHILL);
+			uint32 AnetheronEncounter = instance->GetData(TYPE_ANETHERON);
+			if (RageEncounter == NOT_STARTED)
+			{
+				pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, GOSSIP_ITEM_JAIN_START, GOSSIP_SENDER_MAIN, GOSSIP_OPTION_SD2_1);
+				pPlayer->SEND_GOSSIP_MENU(9168, pCreature->GetObjectGuid());
+			}
+			else if (RageEncounter == DONE && AnetheronEncounter == NOT_STARTED)
+			{
+				pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, JAINA_GOSSIP_ITEM_ANATHERON, GOSSIP_SENDER_MAIN, GOSSIP_OPTION_SD2_2);
+				pPlayer->SEND_GOSSIP_MENU(9380, pCreature->GetObjectGuid());
+			}
+			else if (RageEncounter == DONE && AnetheronEncounter == DONE)
+			{
+				pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, JAINA_GOSSIP_ITEM_SUCCESS, GOSSIP_SENDER_MAIN, GOSSIP_OPTION_SD2_3);
+				pPlayer->SEND_GOSSIP_MENU(9387, pCreature->GetObjectGuid());
+			}
+		}
+	}
+	return true;
+}
+
+
 bool GossipSelect_npc_jaina_proudmoore(Player* player, Creature* creature, uint32 /*uiSender*/, uint32 action)
 {
     if (instance_mount_hyjal* instance = (instance_mount_hyjal*)creature->GetInstanceData())
@@ -58,19 +88,19 @@ bool GossipSelect_npc_jaina_proudmoore(Player* player, Creature* creature, uint3
         {
             switch (action)
             {
-                case 100:
+                case GOSSIP_OPTION_SD2_1:
                     instance->StartEvent(JAINA_FIRST_BOSS);
                     jainaAI->EventStarted();
                     player->PrepareGossipMenu(creature, 7556);
                     player->SendPreparedGossip(creature);
                     break;
-                case 101:
+                case GOSSIP_OPTION_SD2_2:
                     instance->StartEvent(JAINA_SECOND_BOSS);
                     jainaAI->EventStarted();
                     player->PrepareGossipMenu(creature, 7689);
                     player->SendPreparedGossip(creature);
                     break;
-                case 102:
+                case GOSSIP_OPTION_SD2_3:
                     if (instance->GetData(TYPE_AZGALOR) != DONE) // Jaina has the same gossip menu when spawned in orc base, but nothing should happen when selecting her gossip menu options
                     {
                         creature->SetActiveObjectState(true); // Set active object to prevent issues if players go out of range after talking to her (could lead to ores not spawning)
@@ -100,6 +130,35 @@ UnitAI* GetAI_npc_thrall(Creature* creature)
     return tempAI;
 }
 
+bool GossipHello_npc_thrall(Player* pPlayer, Creature* pCreature)
+{
+	if (instance_mount_hyjal * instance = (instance_mount_hyjal*)pCreature->GetInstanceData())
+	{
+		if (hyjalAI * thrallAI = dynamic_cast<hyjalAI*>(pCreature->AI()))
+		{
+			uint32 AnetheronEncounter = instance->GetData(TYPE_ANETHERON);
+			uint32 KazrogalEncounter = instance->GetData(TYPE_KAZROGAL);
+			uint32 AzgalorEncounter = instance->GetData(TYPE_AZGALOR);
+			if (AnetheronEncounter == DONE && KazrogalEncounter == NOT_STARTED)
+			{
+				pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, GOSSIP_ITEM_THRALL_START, GOSSIP_SENDER_MAIN, GOSSIP_OPTION_SD2_1);
+				pPlayer->SEND_GOSSIP_MENU(9225, pCreature->GetObjectGuid());
+			}
+			else if (KazrogalEncounter == DONE && AzgalorEncounter == NOT_STARTED)
+			{
+				pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, THRALL_GOSSIP_ITEM_AZGALOR, GOSSIP_SENDER_MAIN, GOSSIP_OPTION_SD2_2);
+				pPlayer->SEND_GOSSIP_MENU(9232, pCreature->GetObjectGuid());
+			}
+			else if (KazrogalEncounter == DONE && AzgalorEncounter == DONE)
+			{
+				pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, THRALL_GOSSIP_ITEM_SUCCESS, GOSSIP_SENDER_MAIN, GOSSIP_OPTION_SD2_3);
+				pPlayer->SEND_GOSSIP_MENU(9233, pCreature->GetObjectGuid());
+			}
+		}
+	}
+	return true;
+}
+
 bool GossipSelect_npc_thrall(Player* player, Creature* creature, uint32 /*uiSender*/, uint32 action)
 {
     if (instance_mount_hyjal* instance = (instance_mount_hyjal*)creature->GetInstanceData())
@@ -108,19 +167,19 @@ bool GossipSelect_npc_thrall(Player* player, Creature* creature, uint32 /*uiSend
         {
             switch (action)
             {
-            case 100:
+            case GOSSIP_OPTION_SD2_1:
                 instance->StartEvent(THRALL_FIRST_BOSS);
                 thrallAI->EventStarted();
                 player->PrepareGossipMenu(creature, 7584);
                 player->SendPreparedGossip(creature);
                 break;
-            case 101:
+            case GOSSIP_OPTION_SD2_2:
                 instance->StartEvent(THRALL_SECOND_BOSS);
                 thrallAI->EventStarted();
                 player->PrepareGossipMenu(creature, 7701);
                 player->SendPreparedGossip(creature);
                 break;
-            case 102:
+            case GOSSIP_OPTION_SD2_3:
                 creature->SetActiveObjectState(true); // Set active object to prevent issues if players go out of range after talking to him (could lead to ores not spawning)
                 instance->StartEvent(THRALL_WIN);
                 creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP); // ToDo: Thrall should not lose gossip flag, but nothing should happen when choosing his options
@@ -130,6 +189,38 @@ bool GossipSelect_npc_thrall(Player* player, Creature* creature, uint32 /*uiSend
         }
     }
     return true;
+}
+
+bool GossipHello_npc_tyrande_whisperwind(Player* pPlayer, Creature* pCreature)
+{
+	if (instance_mount_hyjal * instance = (instance_mount_hyjal*)pCreature->GetInstanceData())
+	{
+		uint32 AzgalorEvent = instance->GetData(TYPE_AZGALOR);
+		// Only let them get item if Azgalor is dead.
+		if (AzgalorEvent == DONE && !pPlayer->HasItemCount(ITEM_TEAR_OF_GODDESS, 1))
+		{
+			pPlayer->ADD_GOSSIP_ITEM_ID(GOSSIP_ICON_CHAT, TYRANDE_GOSSIP_ITEM_AID, GOSSIP_SENDER_MAIN, GOSSIP_OPTION_SD2_1);
+			pPlayer->SEND_GOSSIP_MENU(9410, pCreature->GetObjectGuid());
+		}
+	}
+	return true;
+}
+
+bool GossipSelect_npc_tyrande_whisperwind(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
+{
+	if (!pPlayer || !pCreature)
+		return false;
+	if (uiAction == GOSSIP_OPTION_SD2_1)
+	{
+		ItemPosCountVec dest;
+		uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, ITEM_TEAR_OF_GODDESS, 1);
+		if (msg == EQUIP_ERR_OK)
+			if (Item* item = pPlayer->StoreNewItem(dest, ITEM_TEAR_OF_GODDESS, true))
+				pPlayer->SendNewItem(item, 1, true, false, true);
+
+		pPlayer->SEND_GOSSIP_MENU(10675, pCreature->GetObjectGuid());
+	}
+	return true;
 }
 
 struct npc_building_triggerAI : public ScriptedAI
@@ -209,17 +300,21 @@ void AddSC_hyjal()
     pNewScript = new Script;
     pNewScript->Name = "npc_jaina_proudmoore";
     pNewScript->GetAI = &GetAI_npc_jaina_proudmoore;
+	pNewScript->pGossipHello = &GossipHello_npc_jaina_proudmoore;
     pNewScript->pGossipSelect = &GossipSelect_npc_jaina_proudmoore;
     pNewScript->RegisterSelf();
 
     pNewScript = new Script;
     pNewScript->Name = "npc_thrall";
     pNewScript->GetAI = &GetAI_npc_thrall;
+	pNewScript->pGossipHello = &GossipHello_npc_thrall;
     pNewScript->pGossipSelect = &GossipSelect_npc_thrall;
     pNewScript->RegisterSelf();
 
     pNewScript = new Script;
     pNewScript->Name = "npc_tyrande_whisperwind";
+	pNewScript->pGossipHello = &GossipHello_npc_tyrande_whisperwind;
+	pNewScript->pGossipSelect = &GossipSelect_npc_tyrande_whisperwind;
     pNewScript->GetAI = &GetAI_npc_tyrande_whisperwind;
     pNewScript->RegisterSelf();
 
