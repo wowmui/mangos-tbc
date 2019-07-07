@@ -2402,6 +2402,7 @@ class Unit : public WorldObject
         void EvadeTimerExpired();
         bool IsInEvadeMode() const { return m_evadeTimer > 0 || m_evadeMode; }
         bool IsEvadingHome() const { return m_evadeMode == EVADE_HOME; }
+		bool IsEvadingCombat() const { return m_evadeMode == EVADE_COMBAT; }
         bool IsEvadeRegen() const { return (m_evadeTimer > 0 && m_evadeTimer <= 5000) || m_evadeMode; } // Only regen after 5 seconds, or when in permanent evade
         void StartEvadeTimer() { m_evadeTimer = 10000; } // 10 seconds after which action is taken
         void StopEvade(); // Stops either timer or evade state

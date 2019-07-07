@@ -8949,8 +8949,12 @@ bool Unit::SelectHostileTarget()
         {
             if (!GetMotionMaster()->GetCurrent()->IsReachable() || !target->isInAccessablePlaceFor(this))
             {
-                if (!IsInEvadeMode())
-                    StartEvadeTimer();
+				if (!IsInEvadeMode())
+				{
+					if (!IsEvadingCombat())
+                        SetEvade(EVADE_COMBAT);
+					StartEvadeTimer();
+				}
             }
             else if (IsInEvadeMode())
                 StopEvade();
